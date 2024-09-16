@@ -1,10 +1,13 @@
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
+import allure
 
 
 class MainPage(BasePage):
 
-    #локаторы вопросов
+    YANDEX_LABEL = By.CLASS_NAME, 'Header_LogoYandex__3TSOI'
+
+    # локаторы вопросов
     FIRST_QUESTION = By.ID, 'accordion__heading-0'
     SECOND_QUESTION = By.ID, 'accordion__heading-1'
     THIRD_QUESTION = By.ID, 'accordion__heading-2'
@@ -14,7 +17,7 @@ class MainPage(BasePage):
     SEVENTH_QUESTION = By.ID, 'accordion__heading-6'
     EIGHTH_QUESTION = By.ID, 'accordion__heading-7'
 
-    #локаторы ответов
+    # локаторы ответов
     FIRST_ANSWER = By.XPATH, '//*[@aria-labelledby="accordion__heading-0"]'
     SECOND_ANSWER = By.XPATH, '//*[@aria-labelledby="accordion__heading-1"]'
     THIRD_ANSWER = By.XPATH, '//*[@aria-labelledby="accordion__heading-2"]'
@@ -46,20 +49,17 @@ class MainPage(BasePage):
         EIGHTH_ANSWER
     ]
 
+    @allure.step("Получение ответа на вопрос")
     def get_answer_to_question(self, question_number):
         question = self.QUESTIONS[question_number]
         answer = self.ANSWERS[question_number]
-
-        self.scroll_to_element(self.driver.find_element(*question))
+        self.scroll_to_element(self.find_element(*question))
         self.wait_for_element_to_be_visible(question)
-
-        self.driver.find_element(*question).click()
+        self.find_element(*question).click()
         self.wait_for_element_to_be_visible(answer)
+        return self.find_element(*answer).text
 
-        return self.driver.find_element(*answer).text
-
-    YANDEX_LABEL = By.CLASS_NAME, 'Header_LogoYandex__3TSOI'
-
+    @allure.step("Переход на страницу Дзена")
     def transfer_to_dzen(self):
-        self.driver.find_element(*self.YANDEX_LABEL).click()
+        self.find_element(*self.YANDEX_LABEL).click()
         self.switch_to_new_window('https://dzen.ru/?yredirect=true')
